@@ -1,4 +1,4 @@
-./node_modules/
-./compiled/
-./ts_dist/
-./webpack_dist/
+/node_modules/
+/compiled/
+/ts_dist/
+/webpack_dist/

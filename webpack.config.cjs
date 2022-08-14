@@ -1,4 +1,5 @@
 const path = require('node:path')
+const { ContextReplacementPlugin } = require('webpack')
 
 module.exports = {
   entry: './ts_dist/index.js',
@@ -13,5 +14,7 @@ module.exports = {
   },
   target: 'node',
   mode: 'production',
-  externals: [/node_modules/, 'bufferutil', 'utf-8-validate'],
+  plugins: [
+    new ContextReplacementPlugin(/(express|keyv)/)
+  ]
 }

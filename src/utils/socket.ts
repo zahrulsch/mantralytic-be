@@ -1,6 +1,22 @@
 import { Server as SocketServer, ServerOptions } from "socket.io";
 import type { Server } from "http";
-import type { Log } from "../model/SocketResponse/Log.js";
+
+type Status = "info" | "success" | "warning" | "error"
+
+interface Logs {
+  log: {
+    type: "crawler" | "connection" | "";
+    url: string;
+    marketplaceType: "shopee" | "tokopedia" | string;
+    status: Status;
+    title: string;
+  };
+  dbLog: {
+    title: string
+    isLoading: boolean
+    status: Status
+  }
+}
 
 let socket: SocketServer = new SocketServer();
 
@@ -11,7 +27,7 @@ export const initSocket = (app: Server, opt?: Partial<ServerOptions>) => {
 
 export const getSocket = () => socket;
 
-export const logEmiter = (options: Log) => {
+export function logEmiter<T extends keyof Logs>(type: T, options: Logs[T]) {
   const socks = getSocket();
-  socks.emit("log", { ...options });
+  socks.emit(type, { ...options });
 };

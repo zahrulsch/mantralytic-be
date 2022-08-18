@@ -9,12 +9,14 @@ module.exports = {
   },
   module: {
     rules: [
-      { test: /\.ts$/, use: 'ts-loader' }
+      { test: /\.ts$/, use: 'ts-loader' },
+      { test: /\.node$/, use: 'node-loader' }
     ]
   },
   target: 'node',
   mode: 'production',
   plugins: [
     new ContextReplacementPlugin(/(express|keyv)/)
-  ]
+  ],
+  externals: ['snappy', '@mongodb-js', 'mongodb']
 }

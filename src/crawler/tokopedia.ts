@@ -34,6 +34,11 @@ class TokopediaCrawler implements CrawlerMethods, CrawlerProperties {
     }
   }
 
+  private parseSupplierUrl(): string {
+    const { shopname } = this.parseUrl()
+    return `https://tokopedia.com/${shopname}`
+  }
+
   private headersGenerator() {
     return {
       "accept-encoding": "gzip, deflate, br",
@@ -262,7 +267,8 @@ class TokopediaCrawler implements CrawlerMethods, CrawlerProperties {
       supplierInfo: {
         productCount: this.getShopProductCount(),
         shopAvatarURL: this.getShopAvatar(),
-        shopLocation: this.getLocation()
+        shopLocation: this.getLocation(),
+        url: this.parseSupplierUrl()
       }
     }
   }

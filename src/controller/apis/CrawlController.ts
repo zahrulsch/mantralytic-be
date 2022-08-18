@@ -1,6 +1,10 @@
 import type { Request, Response, NextFunction } from 'express'
+import { ProductController } from './../entity/ProductController.js';
+import { ProductPropController } from './../entity/ProductPropController.js';
+import { ProductStatController } from './../entity/ProductStatController.js';
 import { urlIdentifier } from './../../helper/urlIdentifier.js';
 import { logEmiter } from './../../utils/socket.js';
+import { onlyDate } from '../../utils/date.js';
 import pMap, { pMapSkip } from 'p-map';
 import TokopediaCrawler from '../../crawler/tokopedia.js';
 import ShopeeCrawler from '../../crawler/shopee.js';
@@ -22,21 +26,119 @@ async function crawler(url: string) {
     }
 
     await engine._initData()
-    logEmiter({
-      marketplaceType: urlType,
-      status: 'success',
-      title: engine.getTitle() || '',
-      type: 'crawler',
-      url
+
+    const {
+      marketplace,
+      productInfo,
+      shopId,
+      supplierInfo,
+      supplierName,
+      isCOD,
+    } = engine.getFullData()
+    const { id, title, categories, images, prices, statistics } = productInfo
+    const { productCount, shopAvatarURL, shopLocation, url: urlSupp } = supplierInfo
+
+    const productInputer = await ProductController.inputProduct({
+      id: id && id !== null && +id || 0,
+      marketplace: marketplace,
+      supplierInfo: {
+        avatar: shopAvatarURL || "",
+        location: shopLocation || "",
+        name: supplierName || "",
+        productCount: productCount || 0,
+        shopid: shopId && shopId !== null && String(shopId) || "",
+        url: urlSupp
+      },
+      dateTimestamp: onlyDate()
     })
-  } catch {
-    logEmiter({
+
+    const productPropInputer = await ProductPropController.inputProductProp({
+      categories: categories || [],
+      images: images || [],
+      isCOD: isCOD || false,
+      name: title || '',
+      originalUrl: url,
+      prices: prices || [],
+      productid: id && id !== null && Number(id) || 0,
+      dateTimestamp: onlyDate()
+    })
+
+    const productStatInputer = await ProductStatController.inputProductStat({ 
+      productid: id && id !== null && +id || 0,
+      dateTimestamp: onlyDate(),
+      allStats: {
+        solds: statistics?.solds || 0,
+        views: statistics?.views || 0,
+        successTransaction: statistics?.successTransactions || 0,
+      }
+     })
+
+    if (productPropInputer) {
+      logEmiter("log", {
+        marketplaceType: '',
+        status: "success",
+        title: `Creating product 🧬 prop record of ${ title } ↩`,
+        type: "crawler",
+        url: url
+      })
+    } else {
+      logEmiter("log", {
+        marketplaceType: '',
+        status: "info",
+        title: `Updating product 🧬 prop record of ${ title } ↩`,
+        type: "crawler",
+        url: url
+      })
+    }
+
+    if (productStatInputer) {
+      logEmiter("log", {
+        marketplaceType: '',
+        status: "success",
+        title: `Creating product 📊 stat record of ${ title } ↩`,
+        type: "crawler",
+        url: url
+      })
+    } else {
+      logEmiter("log", {
+        marketplaceType: '',
+        status: "info",
+        title: `Updating product 📊 stat record of ${ title } ↩`,
+        type: "crawler",
+        url: url
+      })
+    }
+
+    if (productInputer) {
+      logEmiter("log", {
+        marketplaceType: marketplace,
+        status: "success",
+        title: title || "",
+        type: "crawler",
+        url: url
+      })
+    } else {
+      logEmiter("log", {
+        marketplaceType: marketplace,
+        status: "info",
+        title: `Update saved : ${title}`,
+        type: "crawler",
+        url: url
+      })
+    }
+  } catch (e) {
+    const err = e as any
+
+    console.log(err)
+
+    logEmiter('log', {
       marketplaceType: urlType,
       status: 'error',
-      title: 'unknown',
+      title: err.name || 'unknown',
       type: 'crawler',
       url
     })
+
     return pMapSkip
   }
 }
@@ -48,7 +150,7 @@ class CrawlController {
 
       if (urls) {
         pMap(urls, crawler, {
-          concurrency: 15
+          concurrency: 10
         })
       }
 

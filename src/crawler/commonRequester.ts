@@ -11,7 +11,7 @@ const cookiesExtender = got.extend({
 const httpVersionExtender = got.extend({
   http2: true,
   retry: {
-    limit: 3
+    limit: 10
   }
 })
 

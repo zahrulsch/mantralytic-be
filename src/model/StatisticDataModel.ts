@@ -1,5 +1,5 @@
 export interface StatisticDataModel {
-  marketplace: string | null;
+  marketplace: "shopee" | "tokopedia";
   originalUrl: string | null;
   shopId: number | string | null;
   supplierName: string | null;
@@ -23,5 +23,6 @@ export interface StatisticDataModel {
     shopLocation: string | null
     shopAvatarURL: string | null
     productCount: number | null
+    url: string
   }
 }

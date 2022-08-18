@@ -93,6 +93,11 @@ class Shopee implements CrawlerProperties, CrawlerMethods {
     }
   }
 
+  private parseSupplierUrl(): string {
+    if (!this.response3) return ""
+    return `https://shopee.co.id/${this.response3.data.account.username}`
+  }
+
   async _initData(): Promise<void> {
     this.response = await this.requester()
     this.response3 = await this.getSupplierInfo()
@@ -207,7 +212,8 @@ class Shopee implements CrawlerProperties, CrawlerMethods {
       supplierInfo: {
         productCount: this.getShopProductCount(),
         shopAvatarURL: this.getShopAvatar(),
-        shopLocation: this.getLocation()
+        shopLocation: this.getLocation(),
+        url: this.parseSupplierUrl()
       }
     }
   }

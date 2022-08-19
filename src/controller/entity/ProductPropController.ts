@@ -27,7 +27,7 @@ export class ProductPropController {
 
     const { name, images, categories, prices, isCOD, originalUrl } = find
 
-    const diff = getTheDifference(rest, { name, images, categories, prices, isCOD, originalUrl })
+    const diff = getTheDifference(rest, { name, images, categories, prices, isCOD })
 
     // if new record and old record is different or have been changed
     if (diff.length) {

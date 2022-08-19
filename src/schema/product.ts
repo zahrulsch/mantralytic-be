@@ -45,6 +45,10 @@ const productSchema = new mongoose.Schema<Product>({
     default: onlyDate()
   },
   supplierInfo: supplierInfoSchema,
+  originalUrl: {
+    type: String,
+    required: true
+  },
   created: {
     type: Number,
     required: true,

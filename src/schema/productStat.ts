@@ -48,4 +48,9 @@ productStatSchema.pre('updateOne', function() {
   this.set({ updated: fullDate() })
 })
 
+productStatSchema.pre('save', function() {
+  this.set({ updated: fullDate() })
+})
+
+
 export const MProductStat = mongoose.model('ProductStats', productStatSchema) 

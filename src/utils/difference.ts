@@ -18,7 +18,7 @@ interface Difference {
 
 type CompareParams = Pick<
   ProductProp,
-  | "name" | "categories" | "images" | "isCOD" | "prices" | "originalUrl"
+  | "name" | "categories" | "images" | "isCOD" | "prices"
 >;
 
 export const getNameDifference = (newname: string, oldname: string) => {
@@ -106,20 +106,6 @@ export const getPricesDifference = (newprice: number[], oldprice: number[]) => {
   return diff;
 };
 
-export const getOriURLDifference = (newurl: string, oldurl: string) => {
-  let diff = <Difference[]>[];
-
-  if (newurl !== oldurl) {
-    diff.push({
-      key: "original url",
-      old: oldurl,
-      recent: newurl,
-    });
-  }
-
-  return diff;
-};
-
 // main function
 export const getTheDifference = (
   newparams: CompareParams,
@@ -135,10 +121,6 @@ export const getTheDifference = (
     ...getCategoriesDifference(newparams.categories, oldparams.categories),
   ];
   diff = [...diff, ...getPricesDifference(newparams.prices, oldparams.prices)];
-  diff = [
-    ...diff,
-    ...getOriURLDifference(newparams.originalUrl, oldparams.originalUrl),
-  ];
 
   return diff;
 };

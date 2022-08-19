@@ -49,7 +49,8 @@ async function crawler(url: string) {
         shopid: shopId && shopId !== null && String(shopId) || "",
         url: urlSupp
       },
-      dateTimestamp: onlyDate()
+      dateTimestamp: onlyDate(),
+      originalUrl: url
     })
 
     const productPropInputer = await ProductPropController.inputProductProp({
@@ -113,15 +114,15 @@ async function crawler(url: string) {
       logEmiter("log", {
         marketplaceType: marketplace,
         status: "success",
-        title: title || "",
+        title: "💾" + title || "",
         type: "crawler",
         url: url
       })
     } else {
       logEmiter("log", {
-        marketplaceType: marketplace,
+        marketplaceType: "",
         status: "info",
-        title: `Update saved : ${title}`,
+        title: `Update 💾 : ${title}`,
         type: "crawler",
         url: url
       })

@@ -11,6 +11,7 @@ export type Product = {
   id: number
   marketplace: "shopee" | "tokopedia"
   supplierInfo: ProductSupplierInfo
+  originalUrl: string
   dateTimestamp?: number
   created?: number
   updated?: number

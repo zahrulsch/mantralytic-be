@@ -6,9 +6,13 @@ import cors from 'cors'
 import cLog from './utils/cLog.js'
 import apisRouter from './routes/apis/index.js'
 import mongoose from 'mongoose'
+import cron from 'node-cron'
+import { MProduct } from './schema/product.js';
 import { logEmiter } from './utils/socket.js';
 import { createServer } from 'http'
 import { initSocket } from './utils/socket.js';
+import { CrawlController } from './controller/index.js'
+import dayjs from 'dayjs'
 
 dotenv.config()
 
@@ -30,6 +34,8 @@ app.get(/^(?!.*\/apis).*/, (_req, res, _next) => {
   res.sendFile(path.resolve(__dirname, `${publicDir}/index.html`))
 })
 
+
+
 async function main() {
   io.on('connection', socket => {
     logEmiter('log', { marketplaceType: '', status: 'success', title: 'Socket connected successfully', type: 'connection', url: '' })
@@ -49,6 +55,18 @@ async function main() {
   await mongoose.connect(dbURI)
 
   server.listen(PORT, () => {
+
+    async function selfCrawler() {
+      const savedProducturls = (await MProduct.find()).map(s => s.originalUrl).filter((value, index, self) => self.indexOf(value) === index)
+      CrawlController.selfCrawlToCollections(savedProducturls)
+    }
+
+    selfCrawler()
+    cron.schedule("0 * * * *", () => {
+      console.log("Running self crawler on :", dayjs().format('DD MMMM YYYY HH:mm'))
+      selfCrawler()
+    })
+
     cLog(`App running in http://localhost:${PORT}`)
     if (process.env.NODE_ENV === 'production') {
       open(`http://localhost:${PORT}`)

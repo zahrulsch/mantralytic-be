@@ -145,19 +145,31 @@ async function crawler(url: string) {
 }
 
 class CrawlController {
-  static async crawlToCollections(_req: Request, res: Response, next: NextFunction) {
+  static async crawlToCollections(
+    _req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
-      const { colId, urls } = <CrawlToCollectionPaylaod>_req.body
+      const { colId, urls } = <CrawlToCollectionPaylaod>_req.body;
 
       if (urls) {
         pMap(urls, crawler, {
-          concurrency: 10
-        })
+          concurrency: 10,
+        });
       }
 
-      res.send('success').status(200)
+      res.send("success").status(200);
     } catch (e) {
-      next(e)
+      next(e);
+    }
+  }
+
+  static async selfCrawlToCollections(urls: string[]) {
+    if (urls) {
+      pMap(urls, crawler, {
+        concurrency: 10,
+      });
     }
   }
 }

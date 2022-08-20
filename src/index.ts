@@ -55,22 +55,22 @@ async function main() {
   await mongoose.connect(dbURI)
 
   server.listen(PORT, () => {
-
     async function selfCrawler() {
       const savedProducturls = (await MProduct.find()).map(s => s.originalUrl).filter((value, index, self) => self.indexOf(value) === index)
       CrawlController.selfCrawlToCollections(savedProducturls)
     }
 
-    selfCrawler()
-    cron.schedule("0 * * * *", () => {
-      console.log("Running self crawler on :", dayjs().format('DD MMMM YYYY HH:mm'))
-      selfCrawler()
-    })
-
     cLog(`App running in http://localhost:${PORT}`)
     if (process.env.NODE_ENV === 'production') {
       open(`http://localhost:${PORT}`)
     }
+
+    selfCrawler()
+    cron.schedule("0 * * * *", () => {
+      cLog(`Running self crawler on : ${dayjs().format('DD MMMM YYYY HH:mm')}`)
+      selfCrawler()
+    })
+
   })
 }
 

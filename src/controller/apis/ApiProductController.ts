@@ -57,6 +57,8 @@ export class ApiProductController {
           response.name = productProp.name
           response.thumbnail = productProp.images[0]?.url || ""
           response.prices = productProp.prices
+
+          console.log(productProp.images)
         }
 
         // // find last product
@@ -82,6 +84,22 @@ export class ApiProductController {
         timestamp: fullDate(),
         count: productStats.length
       });
+    } catch (e) {
+      next(e)
+    }
+  }
+
+  static async findProductPropOf(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params
+
+      const props = await MProductProp.findOne(
+        { productid: +id, },
+        {},
+        { sort: { updated: -1, }, }
+      );
+
+      res.status(200).json({ data: props })
     } catch (e) {
       next(e)
     }

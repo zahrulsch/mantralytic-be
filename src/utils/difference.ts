@@ -80,7 +80,7 @@ export const getCategoriesDifference = (
   oldcats: string[]
 ) => {
   let diff = <Difference[]>[];
-
+  
   if (JSON.stringify(newcats.sort()) !== JSON.stringify(oldcats.sort())) {
     diff.push({
       key: "category",
